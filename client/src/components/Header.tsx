@@ -1,5 +1,4 @@
 // client/src/components/Header.tsx
-import React from 'react';
 import { imageUrl } from '../assets/imageUrl';
 const Header = () => {
   
