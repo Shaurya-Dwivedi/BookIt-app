@@ -1,9 +1,6 @@
-// client/src/App.tsx
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import type { Experience } from '../types';
-
-// Import Components
 import Header from '../components/Header';
 import ExperienceCard from '../components/ExperienceCard';
 
@@ -29,14 +26,15 @@ function HomePage() {
   }, []);
 
   return (
-    <div className="bg-secondary min-h-screen">
+    <div className="min-h-screen bg-white">
       <Header />
-      <main className="container mx-auto px-4 py-12">
+      
+      <main className="px-8 lg:px-[124px] py-12">
         {loading && <p className="text-center text-gray-500">Loading experiences...</p>}
         {error && <p className="text-center text-red-500">{error}</p>}
         
         {!loading && !error && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 justify-items-center">
             {experiences.map((exp) => (
               <ExperienceCard key={exp._id} experience={exp} />
             ))}
