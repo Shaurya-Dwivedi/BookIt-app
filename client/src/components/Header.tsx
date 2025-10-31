@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 interface HeaderProps {
@@ -32,7 +31,7 @@ const Header = ({ onSearch, searchQuery = '', onClearSearch }: HeaderProps) => {
       />
 
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full md:w-auto sm:justify-end md:justify-start">
-        <div className="flex items-center bg-[#EDEDED] rounded px-4 py-3 w-full sm:w-auto sm:min-w-[240px] md:w-[340px]">
+        <div className="flex items-center bg-[#EDEDED] rounded px-4 py-3 w-full sm:w-auto sm:min-w-60 md:w-[340px]">
           <input
             type="text"
             placeholder="Search experiences"
