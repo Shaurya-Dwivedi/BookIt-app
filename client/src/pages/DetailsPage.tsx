@@ -30,7 +30,8 @@ const DetailsPage = () => {
     if (!id) return;
     const fetchExperience = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/api/experiences/${id}`);
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+        const response = await axios.get(`${API_URL}/experiences/${id}`);
         setExperience(response.data);
         document.title = `${response.data.title} - BookIt`;
         // Pre-select the first available date

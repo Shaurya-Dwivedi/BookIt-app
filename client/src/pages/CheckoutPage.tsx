@@ -56,7 +56,8 @@ const CheckoutPage = () => {
       return;
     }
     try {
-      const res = await axios.post('http://localhost:3001/api/promo/validate', { promoCode });
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+      const res = await axios.post(`${API_URL}/promo/validate`, { promoCode });
       if (res.data.isValid) {
         setDiscount(res.data.discount);
         setError('✓ Promo code applied successfully!');
@@ -89,6 +90,7 @@ const CheckoutPage = () => {
     setError('');
 
     try {
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
         const bookingPayload = {
             experienceId: bookingDetails.experience?._id,
             userName: userInfo.name,
@@ -98,7 +100,7 @@ const CheckoutPage = () => {
             quantity: bookingDetails.quantity,
             totalPrice: total,
         };
-        const res = await axios.post('http://localhost:3001/api/bookings', bookingPayload);
+        const res = await axios.post(`${API_URL}/bookings`, bookingPayload);
         
         // Clear booking details from localStorage after successful booking
         localStorage.removeItem('bookingDetails');

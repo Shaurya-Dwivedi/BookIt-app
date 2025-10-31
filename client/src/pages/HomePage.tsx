@@ -17,7 +17,8 @@ function HomePage() {
   useEffect(() => {
     const fetchExperiences = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/experiences');
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+        const response = await axios.get(`${API_URL}/experiences`);
         setExperiences(response.data);
         setFilteredExperiences(response.data);
       } catch (err) {
