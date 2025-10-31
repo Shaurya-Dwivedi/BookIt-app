@@ -4,6 +4,7 @@ import HomePage from "./pages/HomePage";
 import DetailsPage from "./pages/DetailsPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import ResultPage from "./pages/ResultPage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="/experience/:id" element={<DetailsPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/result" element={<ResultPage />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </div>
   );

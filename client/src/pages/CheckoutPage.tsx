@@ -1,11 +1,15 @@
 // client/src/pages/CheckoutPage.tsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useBooking } from '../context/BookingContext.js';
 import { Navigate, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const CheckoutPage = () => {
   const { bookingDetails } = useBooking();
+  
+  useEffect(() => {
+    document.title = 'Checkout - BookIt';
+  }, []);
   const navigate = useNavigate();
 
   // Form State
@@ -32,11 +36,16 @@ const CheckoutPage = () => {
   };
 
   const handleApplyPromo = async () => {
+    setError(''); // Clear any previous errors
+    if (!promoCode.trim()) {
+      setError('Please enter a promo code.');
+      return;
+    }
     try {
       const res = await axios.post('http://localhost:3001/api/promo/validate', { promoCode });
       if (res.data.isValid) {
         setDiscount(res.data.discount);
-        setError('');
+        setError('✓ Promo code applied successfully!');
       }
     } catch (err) {
       setError('Invalid promo code.');
@@ -63,6 +72,10 @@ const CheckoutPage = () => {
             totalPrice: total,
         };
         const res = await axios.post('http://localhost:3001/api/bookings', bookingPayload);
+        
+        // Clear booking details from localStorage after successful booking
+        localStorage.removeItem('bookingDetails');
+        
         // Navigate to a success/result page
         navigate(`/result?ref=${res.data.bookingRef}`);
     } catch (err: any) {
@@ -73,23 +86,69 @@ const CheckoutPage = () => {
 
   return (
     <main className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Checkout</h1>
+      <div className="flex items-center gap-4 mb-6">
+        <button 
+          onClick={() => navigate(-1)} 
+          className="text-gray-600 hover:text-gray-900 flex items-center gap-2"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          Back
+        </button>
+        <h1 className="text-3xl font-bold">Checkout</h1>
+      </div>
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Left Side: Form */}
         <div className="w-full lg:w-2/3 bg-white p-6 rounded-lg border">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">Full name</label>
-              <input type="text" name="name" id="name" value={userInfo.name} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm" />
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                Full name <span className="text-red-500">*</span>
+              </label>
+              <input 
+                type="text" 
+                name="name" 
+                id="name" 
+                value={userInfo.name} 
+                onChange={handleInputChange} 
+                required
+                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-primary focus:ring-primary sm:text-sm" 
+              />
             </div>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email address</label>
-              <input type="email" name="email" id="email" value={userInfo.email} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm" />
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                Email address <span className="text-red-500">*</span>
+              </label>
+              <input 
+                type="email" 
+                name="email" 
+                id="email" 
+                value={userInfo.email} 
+                onChange={handleInputChange} 
+                required
+                pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-primary focus:ring-primary sm:text-sm" 
+              />
             </div>
           </div>
-          <div className="flex gap-2">
-            <input type="text" value={promoCode} onChange={(e) => setPromoCode(e.target.value.toUpperCase())} placeholder="Promo code" className="block w-full rounded-md border-gray-300 shadow-sm sm:text-sm"/>
-            <button onClick={handleApplyPromo} className="bg-gray-200 px-4 rounded-md text-sm font-semibold">Apply</button>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Promo code (optional)</label>
+            <div className="flex gap-2">
+              <input 
+                type="text" 
+                value={promoCode} 
+                onChange={(e) => setPromoCode(e.target.value.toUpperCase())} 
+                placeholder="Enter promo code" 
+                className="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm sm:text-sm"
+              />
+              <button 
+                onClick={handleApplyPromo} 
+                className="bg-gray-200 px-6 rounded-md text-sm font-semibold hover:bg-gray-300 whitespace-nowrap"
+              >
+                Apply
+              </button>
+            </div>
           </div>
         </div>
 
@@ -99,14 +158,20 @@ const CheckoutPage = () => {
             <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
             <div className="space-y-2">
               <div className="flex justify-between"><span>Experience:</span><span className="font-semibold">{bookingDetails.experience.title}</span></div>
-              {/* ... other summary details ... */}
+              <div className="flex justify-between"><span>Date:</span><span className="font-semibold">{bookingDetails.date}</span></div>
+              <div className="flex justify-between"><span>Time:</span><span className="font-semibold">{bookingDetails.time}</span></div>
+              <div className="flex justify-between"><span>Quantity:</span><span className="font-semibold">{bookingDetails.quantity} {bookingDetails.quantity > 1 ? 'tickets' : 'ticket'}</span></div>
               <hr className="my-2"/>
               <div className="flex justify-between"><span>Subtotal:</span><span>₹{subtotal.toFixed(2)}</span></div>
               <div className="flex justify-between"><span>Taxes (5%):</span><span>₹{taxes.toFixed(2)}</span></div>
               {discount && <div className="flex justify-between text-green-600"><span>Discount:</span><span>- ₹{discountAmount.toFixed(2)}</span></div>}
               <div className="flex justify-between font-bold text-lg"><span>Total:</span><span>₹{total.toFixed(2)}</span></div>
             </div>
-            {error && <p className="text-red-500 text-sm mt-4">{error}</p>}
+            {error && (
+              <p className={`text-sm mt-4 ${error.startsWith('✓') ? 'text-green-600' : 'text-red-500'}`}>
+                {error}
+              </p>
+            )}
             <button onClick={handleConfirmBooking} disabled={isSubmitting} className="w-full bg-primary font-bold py-3 mt-6 rounded-lg disabled:bg-gray-300">
               {isSubmitting ? 'Processing...' : 'Pay and Confirm'}
             </button>

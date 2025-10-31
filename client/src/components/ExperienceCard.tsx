@@ -13,6 +13,10 @@ const ExperienceCard: React.FC<ExperienceCardProps> = ({ experience }) => {
         src={experience.imageUrl}
         alt={experience.title}
         className="h-[170px] w-full object-cover"
+        onError={(e) => {
+          const target = e.target as HTMLImageElement;
+          target.src = 'https://via.placeholder.com/280x170?text=Image+Not+Available';
+        }}
       />
       
       <div className="flex flex-col gap-5 p-4 bg-[#F0F0F0]">
@@ -28,8 +32,8 @@ const ExperienceCard: React.FC<ExperienceCardProps> = ({ experience }) => {
             </div>
           </div>
           
-          <p className="text-[#6C6C6C] text-xs leading-4">
-            Curated small-group experience. Certified guide. Safety first with gear included.
+          <p className="text-[#6C6C6C] text-xs leading-4 line-clamp-2">
+            {experience.description}
           </p>
         </div>
         

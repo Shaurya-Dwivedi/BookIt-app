@@ -22,18 +22,23 @@ const DetailsPage = () => {
   const [selectedTime, setSelectedTime] = useState<TimeSlot | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
 
+  // Calculate max quantity based on selected time slot
+  const maxQuantity = selectedTime ? selectedTime.spotsLeft : 10;
+
   useEffect(() => {
     if (!id) return;
     const fetchExperience = async () => {
       try {
         const response = await axios.get(`http://localhost:3001/api/experiences/${id}`);
         setExperience(response.data);
+        document.title = `${response.data.title} - BookIt`;
         // Pre-select the first available date
         if (response.data.availableSlots && response.data.availableSlots.length > 0) {
           setSelectedDate(response.data.availableSlots[0]);
         }
       } catch (err) {
         setError('Failed to fetch experience details.');
+        document.title = 'Experience Details - BookIt';
       } finally {
         setLoading(false);
       }
@@ -47,14 +52,40 @@ const DetailsPage = () => {
     return new Date(dateString).toLocaleDateString('en-US', options);
   };
 
+  // Reset quantity when time slot changes
+  useEffect(() => {
+    if (selectedTime && quantity > selectedTime.spotsLeft) {
+      setQuantity(Math.min(quantity, selectedTime.spotsLeft));
+    }
+  }, [selectedTime]);
+
   // --- Price calculation ---
   const subtotal = experience ? experience.price * quantity : 0;
   const taxes = subtotal * 0.05; // Example 5% tax
   const total = subtotal + taxes;
 
-  if (loading) return <p className="text-center py-10">Loading details...</p>;
-  if (error) return <p className="text-center text-red-500 py-10">{error}</p>;
-  if (!experience) return <p className="text-center py-10">Experience not found.</p>;
+  if (loading) return (
+    <div className="flex flex-col items-center justify-center min-h-screen">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <p className="text-center text-gray-500 mt-4">Loading details...</p>
+    </div>
+  );
+  if (error) return (
+    <div className="text-center py-20">
+      <p className="text-red-500 text-lg">{error}</p>
+      <Link to="/" className="mt-4 inline-block bg-primary px-6 py-2 rounded-lg font-semibold hover:bg-yellow-400">
+        Back to Home
+      </Link>
+    </div>
+  );
+  if (!experience) return (
+    <div className="text-center py-20">
+      <p className="text-gray-500 text-lg">Experience not found.</p>
+      <Link to="/" className="mt-4 inline-block bg-primary px-6 py-2 rounded-lg font-semibold hover:bg-yellow-400">
+        Back to Home
+      </Link>
+    </div>
+  );
 
    const handleConfirm = () => {
     if (!experience || !selectedDate || !selectedTime) return;
@@ -82,9 +113,17 @@ const DetailsPage = () => {
       <div className="flex flex-col lg:flex-row gap-12">
         {/* Left Column */}
         <div className="w-full lg:w-2/3">
-          <img src={experience.imageUrl} alt={experience.title} className="w-full rounded-lg shadow-lg mb-6" />
+          <img 
+            src={experience.imageUrl} 
+            alt={experience.title} 
+            className="w-full rounded-lg shadow-lg mb-6"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src = 'https://via.placeholder.com/800x400?text=Image+Not+Available';
+            }}
+          />
           <h1 className="text-4xl font-bold text-gray-800 mb-2">{experience.title}</h1>
-          <p className="text-gray-600 mb-6">Curated small-group experience. Certified guide. Safety first with gear included. Helmet and Life jackets along with an expert will accompany in kayaking.</p>
+          <p className="text-gray-600 mb-6">{experience.description}</p>
 
           {/* Date Selection */}
           <div className="mb-6">
@@ -110,7 +149,14 @@ const DetailsPage = () => {
             <div className="mb-6">
               <h2 className="text-xl font-semibold mb-3">Choose time</h2>
               <div className="flex flex-wrap gap-3">
-                {selectedDate.timeSlots.map((timeSlot) => (
+                {selectedDate.timeSlots
+                  .sort((a, b) => {
+                    // Sort time slots chronologically
+                    const timeA = new Date(`2000-01-01 ${a.time}`).getTime();
+                    const timeB = new Date(`2000-01-01 ${b.time}`).getTime();
+                    return timeA - timeB;
+                  })
+                  .map((timeSlot) => (
                   <button
                     key={timeSlot._id}
                     onClick={() => setSelectedTime(timeSlot)}
@@ -135,11 +181,18 @@ const DetailsPage = () => {
               <div className="flex justify-between items-center">
                 <span>Quantity</span>
                 <div className="flex items-center gap-3 border rounded-md">
-                  <button onClick={() => setQuantity(q => Math.max(1, q - 1))} className="px-3 py-1">-</button>
+                  <button onClick={() => setQuantity(q => Math.max(1, q - 1))} className="px-3 py-1 hover:bg-gray-100">-</button>
                   <span className="font-semibold">{quantity}</span>
-                  <button onClick={() => setQuantity(q => q + 1)} className="px-3 py-1">+</button>
+                  <button 
+                    onClick={() => setQuantity(q => Math.min(maxQuantity, q + 1))} 
+                    className="px-3 py-1 hover:bg-gray-100"
+                    disabled={quantity >= maxQuantity}
+                  >+</button>
                 </div>
               </div>
+              {selectedTime && quantity >= maxQuantity && (
+                <p className="text-sm text-orange-600">Maximum available: {maxQuantity}</p>
+              )}
               <div className="flex justify-between"><span>Subtotal</span><span>₹{subtotal.toFixed(2)}</span></div>
               <div className="flex justify-between"><span>Taxes</span><span>₹{taxes.toFixed(2)}</span></div>
             </div>

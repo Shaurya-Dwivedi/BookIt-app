@@ -1,10 +1,15 @@
 // client/src/pages/ResultPage.tsx
+import { useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { CheckCircle } from 'lucide-react';
 
 const ResultPage = () => {
   const [searchParams] = useSearchParams();
   const bookingRef = searchParams.get('ref');
+  
+  useEffect(() => {
+    document.title = 'Booking Confirmed - BookIt';
+  }, []);
 
   return (
     <main className="container mx-auto flex flex-col items-center justify-center text-center py-20">

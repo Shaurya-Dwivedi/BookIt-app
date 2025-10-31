@@ -22,15 +22,36 @@ const BookingContext = createContext<BookingContextType | undefined>(undefined);
 
 // Create the Provider component
 export const BookingProvider = ({ children }: { children: ReactNode }) => {
-  const [bookingDetails, setBookingDetails] = useState<BookingDetails>({
-    experience: null,
-    date: null,
-    time: null,
-    quantity: 1,
+  // Initialize state from localStorage if available
+  const [bookingDetails, setBookingDetails] = useState<BookingDetails>(() => {
+    try {
+      const saved = localStorage.getItem('bookingDetails');
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch (error) {
+      console.error('Error loading booking details from localStorage:', error);
+    }
+    return {
+      experience: null,
+      date: null,
+      time: null,
+      quantity: 1,
+    };
   });
 
+  // Save to localStorage whenever bookingDetails changes
+  const updateBookingDetails = (details: BookingDetails) => {
+    setBookingDetails(details);
+    try {
+      localStorage.setItem('bookingDetails', JSON.stringify(details));
+    } catch (error) {
+      console.error('Error saving booking details to localStorage:', error);
+    }
+  };
+
   return (
-    <BookingContext.Provider value={{ bookingDetails, setBookingDetails }}>
+    <BookingContext.Provider value={{ bookingDetails, setBookingDetails: updateBookingDetails }}>
       {children}
     </BookingContext.Provider>
   );
