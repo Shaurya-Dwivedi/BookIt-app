@@ -8,7 +8,7 @@ interface ExperienceCardProps {
 
 const ExperienceCard: React.FC<ExperienceCardProps> = ({ experience }) => {
   return (
-    <div className="flex flex-col w-[280px] rounded-xl overflow-hidden">
+    <div className="flex flex-col w-full max-w-[280px] rounded-xl overflow-hidden">
       <img
         src={experience.imageUrl}
         alt={experience.title}

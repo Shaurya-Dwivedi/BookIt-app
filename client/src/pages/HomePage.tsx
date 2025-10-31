@@ -28,13 +28,13 @@ function HomePage() {
   return (
     <div className="min-h-screen bg-white">
       <Header />
-      
-      <main className="px-8 lg:px-[124px] py-12">
+
+      <main className="px-4 sm:px-6 md:px-8 lg:px-[124px] py-8 md:py-12">
         {loading && <p className="text-center text-gray-500">Loading experiences...</p>}
         {error && <p className="text-center text-red-500">{error}</p>}
-        
+
         {!loading && !error && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 justify-items-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 justify-items-center">
             {experiences.map((exp) => (
               <ExperienceCard key={exp._id} experience={exp} />
             ))}
