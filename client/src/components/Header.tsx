@@ -31,8 +31,8 @@ const Header = ({ onSearch, searchQuery = '', onClearSearch }: HeaderProps) => {
         onClick={() => navigate('/')}
       />
 
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full md:w-auto">
-        <div className="flex items-center bg-[#EDEDED] rounded px-4 py-3 w-full sm:w-[280px] md:w-[340px]">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full md:w-auto sm:justify-end md:justify-start">
+        <div className="flex items-center bg-[#EDEDED] rounded px-4 py-3 w-full sm:w-auto sm:min-w-[240px] md:w-[340px]">
           <input
             type="text"
             placeholder="Search experiences"
@@ -57,7 +57,7 @@ const Header = ({ onSearch, searchQuery = '', onClearSearch }: HeaderProps) => {
         </div>
         <button 
           onClick={handleSearch}
-          className="flex items-center justify-center bg-[#FFD643] rounded-lg px-5 py-3 whitespace-nowrap hover:bg-yellow-400 transition-colors"
+          className="flex items-center justify-center bg-[#FFD643] rounded-lg px-5 py-3 whitespace-nowrap hover:bg-yellow-400 transition-colors sm:w-auto"
         >
           <span className="text-[#161616] text-sm font-medium">Search</span>
         </button>
