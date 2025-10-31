@@ -15,7 +15,13 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // --- Middlewares ---
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'https://book-it-app-intern-frontend.vercel.app'
+  ],
+  credentials: true
+}));
 app.use(express.json());
 
 // --- Database Connection ---
@@ -47,5 +53,5 @@ app.use('/api/promo', promoRoutes);
 app.use('/api/bookings', bookingRoutes);
 // --- Start the Server ---
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  // console.log(`Server is running on http://localhost:${PORT}`);
 });
