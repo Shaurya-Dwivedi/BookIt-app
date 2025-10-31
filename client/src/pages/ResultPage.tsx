@@ -2,6 +2,7 @@
 import { useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { CheckCircle } from 'lucide-react';
+import Header from '../components/Header';
 
 const ResultPage = () => {
   const [searchParams] = useSearchParams();
@@ -12,7 +13,9 @@ const ResultPage = () => {
   }, []);
 
   return (
-    <main className="container mx-auto flex flex-col items-center justify-center text-center py-20">
+    <>
+      <Header />
+      <main className="container mx-auto flex flex-col items-center justify-center text-center py-20">
         <CheckCircle className="text-green-500" size={80} />
         <h1 className="text-4xl font-bold mt-6">Booking Confirmed!</h1>
         <p className="text-lg text-gray-600 mt-2">
@@ -28,6 +31,7 @@ const ResultPage = () => {
             </button>
         </Link>
     </main>
+    </>
   );
 };
 

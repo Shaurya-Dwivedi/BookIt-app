@@ -1,12 +1,13 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 interface HeaderProps {
   onSearch?: (query: string) => void;
+  searchQuery?: string;
+  onClearSearch?: () => void;
 }
 
-const Header = ({ onSearch }: HeaderProps) => {
-  const [searchQuery, setSearchQuery] = useState('');
+const Header = ({ onSearch, searchQuery = '', onClearSearch }: HeaderProps) => {
   const navigate = useNavigate();
 
   const handleSearch = () => {
@@ -36,10 +37,23 @@ const Header = ({ onSearch }: HeaderProps) => {
             type="text"
             placeholder="Search experiences"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => {
+              if (onSearch) {
+                onSearch(e.target.value);
+              }
+            }}
             onKeyPress={handleKeyPress}
             className="bg-transparent outline-none text-[#727272] text-sm w-full placeholder:text-[#727272]"
           />
+          {searchQuery && onClearSearch && (
+            <button 
+              onClick={onClearSearch}
+              className="ml-2 text-gray-500 hover:text-gray-700"
+              title="Clear search"
+            >
+              ✕
+            </button>
+          )}
         </div>
         <button 
           onClick={handleSearch}

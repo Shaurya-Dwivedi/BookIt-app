@@ -8,11 +8,11 @@ interface ExperienceCardProps {
 
 const ExperienceCard: React.FC<ExperienceCardProps> = ({ experience }) => {
   return (
-    <div className="flex flex-col w-full max-w-[280px] rounded-xl overflow-hidden">
+    <div className="flex flex-col w-full max-w-[280px] rounded-xl overflow-hidden transition-transform duration-300 hover:scale-105 hover:shadow-xl cursor-pointer">
       <img
         src={experience.imageUrl}
         alt={experience.title}
-        className="h-[170px] w-full object-cover"
+        className="h-[170px] w-full object-cover transition-transform duration-300"
         onError={(e) => {
           const target = e.target as HTMLImageElement;
           target.src = 'https://via.placeholder.com/280x170?text=Image+Not+Available';

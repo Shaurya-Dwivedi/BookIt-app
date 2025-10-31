@@ -5,6 +5,7 @@ import axios from 'axios';
 import type { Experience, DateSlot, TimeSlot } from '../types';
 import { ArrowLeft } from 'lucide-react'; // A nice icon library, let's install it
 import { useNavigate } from 'react-router-dom';
+import Header from '../components/Header';
 import { useBooking } from '../context/BookingContext';
 
 const DetailsPage = () => {
@@ -104,11 +105,13 @@ const DetailsPage = () => {
 
 
   return (
-    <main className="container mx-auto px-4 py-8">
-      <Link to="/" className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6">
-        <ArrowLeft size={20} />
-        Back to experiences
-      </Link>
+    <>
+      <Header />
+      <main className="container mx-auto px-4 py-8">
+        <Link to="/" className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6">
+          <ArrowLeft size={20} />
+          Back to experiences
+        </Link>
 
       <div className="flex flex-col lg:flex-row gap-12">
         {/* Left Column */}
@@ -147,7 +150,7 @@ const DetailsPage = () => {
           {/* Time Selection */}
           {selectedDate && (
             <div className="mb-6">
-              <h2 className="text-xl font-semibold mb-3">Choose time</h2>
+              <h2 className="text-xl font-semibold mb-3">Choose time (IST)</h2>
               <div className="flex flex-wrap gap-3">
                 {selectedDate.timeSlots
                   .sort((a, b) => {
@@ -218,6 +221,7 @@ const DetailsPage = () => {
         </div>
       </div>
     </main>
+    </>
   );
 };
 

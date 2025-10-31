@@ -46,9 +46,14 @@ function HomePage() {
     setFilteredExperiences(filtered);
   };
 
+  const handleClearSearch = () => {
+    setSearchQuery('');
+    setFilteredExperiences(experiences);
+  };
+
   return (
     <div className="min-h-screen bg-white">
-      <Header onSearch={handleSearch} />
+      <Header onSearch={handleSearch} searchQuery={searchQuery} onClearSearch={handleClearSearch} />
 
       <main className="px-4 sm:px-6 md:px-8 lg:px-[124px] py-8 md:py-12">
         {loading && (
@@ -84,7 +89,7 @@ function HomePage() {
                   {filteredExperiences.length} result{filteredExperiences.length !== 1 ? 's' : ''} found for "{searchQuery}"
                   {filteredExperiences.length !== experiences.length && (
                     <button 
-                      onClick={() => handleSearch('')} 
+                      onClick={handleClearSearch} 
                       className="ml-2 text-primary hover:underline"
                     >
                       Clear search
@@ -97,7 +102,7 @@ function HomePage() {
               <div className="text-center py-20">
                 <p className="text-gray-500 text-lg mb-2">No experiences match your search.</p>
                 <button 
-                  onClick={() => handleSearch('')} 
+                  onClick={handleClearSearch} 
                   className="mt-4 bg-primary px-6 py-2 rounded-lg font-semibold hover:bg-yellow-400"
                 >
                   Clear search

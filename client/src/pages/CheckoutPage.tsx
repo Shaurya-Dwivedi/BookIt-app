@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useBooking } from '../context/BookingContext.js';
 import { Navigate, useNavigate } from 'react-router-dom';
+import Header from '../components/Header';
 import axios from 'axios';
 
 const CheckoutPage = () => {
@@ -18,6 +19,8 @@ const CheckoutPage = () => {
   const [discount, setDiscount] = useState<{ type: 'flat' | 'percentage', value: number } | null>(null);
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [emailError, setEmailError] = useState('');
 
   if (!bookingDetails.experience) {
     return <Navigate to="/" />;
@@ -32,7 +35,18 @@ const CheckoutPage = () => {
   const total = subtotal + taxes - discountAmount;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUserInfo({ ...userInfo, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setUserInfo({ ...userInfo, [name]: value });
+    
+    // Validate email in real-time
+    if (name === 'email') {
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (value && !emailRegex.test(value)) {
+        setEmailError('Please enter a valid email address');
+      } else {
+        setEmailError('');
+      }
+    }
   };
 
   const handleApplyPromo = async () => {
@@ -58,6 +72,19 @@ const CheckoutPage = () => {
         setError('Please fill in your name and email.');
         return;
     }
+    
+    // Validate email format
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(userInfo.email)) {
+        setError('Please enter a valid email address.');
+        return;
+    }
+    
+    if (!agreedToTerms) {
+        setError('Please agree to the terms and safety policy.');
+        return;
+    }
+    
     setIsSubmitting(true);
     setError('');
 
@@ -85,8 +112,10 @@ const CheckoutPage = () => {
   };
 
   return (
-    <main className="container mx-auto px-4 py-8">
-      <div className="flex items-center gap-4 mb-6">
+    <>
+      <Header />
+      <main className="container mx-auto px-4 py-8">
+        <div className="flex items-center gap-4 mb-6">
         <button 
           onClick={() => navigate(-1)} 
           className="text-gray-600 hover:text-gray-900 flex items-center gap-2"
@@ -127,10 +156,25 @@ const CheckoutPage = () => {
                 value={userInfo.email} 
                 onChange={handleInputChange} 
                 required
-                pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-primary focus:ring-primary sm:text-sm" 
+                className={`mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:border-primary focus:ring-primary sm:text-sm ${
+                  emailError ? 'border-red-500' : 'border-gray-300'
+                }`}
               />
+              {emailError && <p className="text-red-500 text-xs mt-1">{emailError}</p>}
             </div>
+          </div>
+          
+          <div className="flex items-start mb-4">
+            <input 
+              type="checkbox" 
+              id="terms" 
+              checked={agreedToTerms}
+              onChange={(e) => setAgreedToTerms(e.target.checked)}
+              className="mt-1 mr-3 h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+            />
+            <label htmlFor="terms" className="text-sm text-gray-700">
+              I agree to the <a href="#" className="text-primary hover:underline">Terms and Conditions</a> and <a href="#" className="text-primary hover:underline">Safety Policy</a> <span className="text-red-500">*</span>
+            </label>
           </div>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">Promo code (optional)</label>
@@ -159,7 +203,7 @@ const CheckoutPage = () => {
             <div className="space-y-2">
               <div className="flex justify-between"><span>Experience:</span><span className="font-semibold">{bookingDetails.experience.title}</span></div>
               <div className="flex justify-between"><span>Date:</span><span className="font-semibold">{bookingDetails.date}</span></div>
-              <div className="flex justify-between"><span>Time:</span><span className="font-semibold">{bookingDetails.time}</span></div>
+              <div className="flex justify-between"><span>Time:</span><span className="font-semibold">{bookingDetails.time} IST</span></div>
               <div className="flex justify-between"><span>Quantity:</span><span className="font-semibold">{bookingDetails.quantity} {bookingDetails.quantity > 1 ? 'tickets' : 'ticket'}</span></div>
               <hr className="my-2"/>
               <div className="flex justify-between"><span>Subtotal:</span><span>₹{subtotal.toFixed(2)}</span></div>
@@ -172,13 +216,18 @@ const CheckoutPage = () => {
                 {error}
               </p>
             )}
-            <button onClick={handleConfirmBooking} disabled={isSubmitting} className="w-full bg-primary font-bold py-3 mt-6 rounded-lg disabled:bg-gray-300">
+            <button 
+              onClick={handleConfirmBooking} 
+              disabled={isSubmitting || !agreedToTerms || !!emailError} 
+              className="w-full bg-primary text-black font-bold py-3 mt-6 rounded-lg hover:bg-yellow-400 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+            >
               {isSubmitting ? 'Processing...' : 'Pay and Confirm'}
             </button>
           </div>
         </div>
       </div>
     </main>
+    </>
   );
 };
 
