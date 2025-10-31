@@ -120,7 +120,7 @@ const DetailsPage = () => {
           <img 
             src={experience.imageUrl} 
             alt={experience.title} 
-            className="w-full rounded-lg shadow-lg mb-6"
+            className="w-full h-[600px] object-cover rounded-lg shadow-lg mb-6"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               target.src = 'https://via.placeholder.com/800x400?text=Image+Not+Available';
