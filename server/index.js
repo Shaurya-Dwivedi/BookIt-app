@@ -5,6 +5,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose'; // Import mongoose
 
+import promoRoutes from './routes/promoRoutes.js';
+import bookingRoutes from './routes/bookingRoutes.js';
 import experienceRoutes from './routes/experienceRoutes.js';
 
 dotenv.config();
@@ -41,7 +43,8 @@ connectDB();
 // --- Use the Routes ---
 // Any request starting with /api/experiences will be handled by our experienceRoutes
 app.use('/api/experiences', experienceRoutes);
-
+app.use('/api/promo', promoRoutes);
+app.use('/api/bookings', bookingRoutes);
 // --- Start the Server ---
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

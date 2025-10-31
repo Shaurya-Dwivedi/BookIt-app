@@ -23,6 +23,21 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/:id', async (req, res) => {
+  try {
+    const experience = await Experience.findById(req.params.id);
+    
+    if (!experience) {
+      // If no experience is found with that ID, return a 404 error
+      return res.status(404).json({ message: 'Experience not found' });
+    }
+    
+    res.json(experience);
+  } catch (error) {
+    console.error('Error fetching single experience:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 // We will add more routes here later
 
 // Export the router

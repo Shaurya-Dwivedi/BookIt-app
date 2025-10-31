@@ -1,18 +1,21 @@
 // client/src/App.tsx
+import { Routes, Route } from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import DetailsPage from "./pages/DetailsPage";
+import CheckoutPage from "./pages/CheckoutPage";
+import ResultPage from "./pages/ResultPage";
+
 function App() {
   return (
-    <div className="bg-gray-100 min-h-screen">
-      <header className="bg-white shadow">
-        <div className="container mx-auto px-4 py-6">
-          <h1 className="text-3xl font-bold text-gray-800 text-center">Bookit</h1>
-        </div>
-      </header>
-      <main className="container mx-auto px-4 py-8">
-        <h2 className="text-2xl font-semibold mb-6">Our Experiences</h2>
-        {/* Experience cards will go here */}
-      </main>
+    <div className="bg-secondary min-h-screen">
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/experience/:id" element={<DetailsPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/result" element={<ResultPage />} />
+      </Routes>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

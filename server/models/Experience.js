@@ -2,6 +2,17 @@
 
 import mongoose from 'mongoose';
 
+
+const timeSlotSchema = new mongoose.Schema({
+  time: { type: String, required: true }, // e.g., "09:00 AM"
+  spotsLeft: { type: Number, required: true },
+});
+
+
+const dateSlotSchema = new mongoose.Schema({
+  date: { type: Date, required: true }, // e.g., "2025-10-22T00:00:00.000Z"
+  timeSlots: [timeSlotSchema],
+});
 // Define the schema for the Experience collection
 const experienceSchema = new mongoose.Schema({
   title: {
@@ -25,14 +36,12 @@ const experienceSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  // We will add slots and dates later on
+  availableSlots: [dateSlotSchema],
 }, {
   // Adds createdAt and updatedAt timestamps automatically
   timestamps: true,
 });
 
-// Create the Experience model from the schema
 const Experience = mongoose.model('Experience', experienceSchema);
 
-// Export the model so we can use it in other files
 export default Experience;
