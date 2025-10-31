@@ -1,14 +1,23 @@
 import React from "react";
 import type { Experience } from "../types";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 interface ExperienceCardProps {
   experience: Experience;
 }
 
 const ExperienceCard: React.FC<ExperienceCardProps> = ({ experience }) => {
+  const navigate = useNavigate();
+
+  const handleCardClick = () => {
+    navigate(`/experience/${experience._id}`);
+  };
+
   return (
-    <div className="flex flex-col w-full max-w-[280px] rounded-xl overflow-hidden transition-transform duration-300 hover:scale-105 hover:shadow-xl cursor-pointer">
+    <div 
+      className="flex flex-col w-full max-w-[280px] rounded-xl overflow-hidden transition-transform duration-300 hover:scale-105 hover:shadow-xl cursor-pointer"
+      onClick={handleCardClick}
+    >
       <img
         src={experience.imageUrl}
         alt={experience.title}
@@ -43,11 +52,15 @@ const ExperienceCard: React.FC<ExperienceCardProps> = ({ experience }) => {
             <span className="text-[#161616] text-xl font-medium leading-6">₹{experience.price}</span>
           </div>
           
-          <Link to={`/experience/${experience._id}`}>
-            <button className="flex items-center justify-center bg-[#FFD643] rounded px-2 py-1.5">
-              <span className="text-[#161616] text-sm font-medium leading-[18px]">View Details</span>
-            </button>
-          </Link>
+          <button 
+            className="flex items-center justify-center bg-[#FFD643] rounded px-2 py-1.5 hover:bg-yellow-400 transition-colors"
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent double navigation if clicked directly
+              handleCardClick();
+            }}
+          >
+            <span className="text-[#161616] text-sm font-medium leading-[18px]">View Details</span>
+          </button>
         </div>
       </div>
     </div>
