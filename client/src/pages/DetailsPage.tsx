@@ -12,7 +12,7 @@ const DetailsPage = () => {
   const { id } = useParams<{ id: string }>();
 
   const navigate = useNavigate(); // For navigation
-  const { setBookingDetails } = useBooking(); // To set global state
+  const { bookingDetails, setBookingDetails } = useBooking(); // To get and set global state
   
   const [experience, setExperience] = useState<Experience | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -25,6 +25,37 @@ const DetailsPage = () => {
 
   // Calculate max quantity based on selected time slot
   const maxQuantity = selectedTime ? selectedTime.spotsLeft : 10;
+
+  // Restore selections from booking context on page load
+  useEffect(() => {
+    if (bookingDetails.experience?._id === id) {
+      // Only restore if the booking is for this experience
+      if (bookingDetails.date && experience) {
+        // Find and restore the selected date
+        const savedDate = experience.availableSlots.find(
+          (slot) => new Date(slot.date).toLocaleDateString('en-CA') === bookingDetails.date
+        );
+        if (savedDate) {
+          setSelectedDate(savedDate);
+          
+          // Find and restore the selected time
+          if (bookingDetails.time) {
+            const savedTime = savedDate.timeSlots.find(
+              (slot) => slot.time === bookingDetails.time
+            );
+            if (savedTime) {
+              setSelectedTime(savedTime);
+            }
+          }
+        }
+      }
+      
+      // Restore quantity
+      if (bookingDetails.quantity > 0) {
+        setQuantity(bookingDetails.quantity);
+      }
+    }
+  }, [experience, bookingDetails, id]);
 
   useEffect(() => {
     if (!id) return;
